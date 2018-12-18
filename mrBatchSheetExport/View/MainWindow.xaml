@@ -1,0 +1,113 @@
+﻿<mps:ModPlusWindow x:Class="mrBatchSheetExport.View.MainWindow"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mps="https://modplus.org/winfx/xaml/controls"
+                   xmlns:viewModel="clr-namespace:mrBatchSheetExport.ViewModel"
+                   SizeToContent="WidthAndHeight"
+                   ResizeMode="CanResizeWithGrip"
+                   MinHeight="300" MinWidth="400"
+                   Topmost="True"
+                   Loaded="MainWindow_OnLoaded"
+                   ContentRendered="MainWindow_OnContentRendered"
+                   Closing="MainWindow_OnClosing">
+    <Window.DataContext>
+        <viewModel:MainViewModel></viewModel:MainViewModel>
+    </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ModPlusStyle;component/Styles/Controls.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mrBatchSheetExport"></XmlDataProvider>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+          <Grid.RowDefinitions>
+              <RowDefinition Height="*"/>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <!-- drawings -->
+        <ListBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Path=Drawings}"
+                 Name="LbDrawings">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Path=Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
+                        <TextBlock Text="{Binding Path=Name}" VerticalAlignment="Center"></TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <!-- controls -->
+        <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Orientation="Vertical">
+            <Button Style="{DynamicResource ModPlusFlatButton}" Margin="0 4 4 4" MinWidth="0"
+                    Padding="2" Name="BtSelectAll"
+                    Click="BtSelectAll_OnClick"
+                    ToolTip="{Binding Source={StaticResource Lang}, XPath=t1}">
+                <Viewbox Width="24" Height="24">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="M20,16V10H22V16A2,2 0 0,1 20,18H8C6.89,18 6,17.1 6,16V4C6,2.89 6.89,2 8,2H16V4H8V16H20M10.91,7.08L14,10.17L20.59,3.58L22,5L14,13L9.5,8.5L10.91,7.08M16,20V22H4A2,2 0 0,1 2,20V7H4V20H16Z" 
+                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" />
+                    </Canvas>
+                </Viewbox>
+            </Button>
+            <Button Style="{DynamicResource ModPlusFlatButton}" Margin="0 4 4 4" MinWidth="0"
+                    Padding="2" Name="BtUnselectAll"
+                    Click="BtUnselectAll_OnClick"
+                    ToolTip="{Binding Source={StaticResource Lang}, XPath=t2}">
+                <Viewbox Width="24" Height="24">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="M20,16V4H8V16H20M22,16A2,2 0 0,1 20,18H8C6.89,18 6,17.1 6,16V4C6,2.89 6.89,2 8,2H20A2,2 0 0,1 22,4V16M16,20V22H4A2,2 0 0,1 2,20V7H4V20H16Z" 
+                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" />
+                    </Canvas>
+                </Viewbox>
+            </Button>
+            <Button Style="{DynamicResource ModPlusFlatButton}" Margin="0 4 4 4" MinWidth="0"
+                    Padding="2" Name="BtReverseSelection"
+                    Click="BtReverseSelection_OnClick"
+                    ToolTip="{Binding Source={StaticResource Lang}, XPath=t3}">
+                <Viewbox Width="24" Height="24">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z" 
+                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" />
+                    </Canvas>
+                </Viewbox>
+            </Button>
+        </StackPanel>
+        <!-- export setup -->
+        <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding Source={StaticResource Lang}, XPath=h1}"
+                       Margin="{DynamicResource ModPlusDefaultMargin}"></TextBlock>
+            <ComboBox Grid.Column="1" Grid.Row="0" SelectedIndex="{Binding Path=ExportVariant, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <ComboBoxItem Content="Dwg"></ComboBoxItem>
+                <ComboBoxItem Content="Dxf"></ComboBoxItem>
+            </ComboBox>
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding Source={StaticResource Lang}, XPath=h2}"
+                       Margin="{DynamicResource ModPlusDefaultMargin}"></TextBlock>
+            <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Path=AutocadFileVersions}"
+                      SelectedItem="{Binding Path=SelectedAutocadFileVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+            <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" HorizontalAlignment="Left"
+                      Content="{Binding Source={StaticResource Lang}, XPath=h3}"
+                      ToolTip="{Binding Source={StaticResource Lang}, XPath=t4}"
+                      IsChecked="{Binding Path=OverwriteExist, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
+        </Grid>
+        <!-- button -->
+        <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
+                Content="{Binding Source={StaticResource Lang}, XPath=h4}"
+                Command="{Binding Path=ExportCommand}"></Button>
+    </Grid>
+</mps:ModPlusWindow>
