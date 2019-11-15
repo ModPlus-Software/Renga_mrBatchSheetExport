@@ -1,11 +1,9 @@
 ﻿namespace mrBatchSheetExport.Model
 {
-    using System.ComponentModel;
-    using System.Runtime.CompilerServices;
-    using Annotations;
+    using ModPlusAPI.Mvvm;
     using Renga;
 
-    public class Drawing : INotifyPropertyChanged
+    public class Drawing : VmBase
     {
         public IDrawing SourceIDrawing;
 
@@ -13,7 +11,6 @@
         {
             SourceIDrawing = sourceIDrawing;
             Name = sourceIDrawing.Name;
-            
         }
 
         /// <summary>
@@ -29,18 +26,11 @@
             get => _selected;
             set
             {
-                if (Equals(value, _selected)) return;
+                if (Equals(value, _selected))
+                    return;
                 _selected = value;
                 OnPropertyChanged();
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

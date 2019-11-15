@@ -3,14 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.ComponentModel;
     using System.IO;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using System.Windows.Forms;
     using System.Windows.Input;
-    using Annotations;
     using Model;
     using ModPlusAPI;
     using ModPlusAPI.Mvvm;
@@ -19,7 +16,7 @@
     using Renga;
     using View;
 
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : VmBase
     {
         private readonly Renga.Application _rengaApplication;
         private const string LangItem = "mrBatchSheetExport";
@@ -33,13 +30,12 @@
         /// </summary>
         public MainViewModel()
         {
-
         }
 
         public MainViewModel(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
-            _mainWindow.Title = Language.GetFunctionLocalName(LangItem, Interface.Instance.LName);
+            _mainWindow.Title = Language.GetFunctionLocalName(LangItem, ModPlusConnector.Instance.LName);
             _rengaApplication = new Renga.Application();
             LoadSettings();
             Drawings = new ObservableCollection<Drawing>();
@@ -48,12 +44,13 @@
 
         public void GetDrawings()
         {
-            List<Drawing> drawings = new List<Drawing>();
+            var drawings = new List<Drawing>();
             for (var i = 0; i < _rengaApplication.Project.Drawings.Count; i++)
             {
-                IDrawing drawing = _rengaApplication.Project.Drawings.Get(i);
+                var drawing = _rengaApplication.Project.Drawings.Get(i);
                 drawings.Add(new Drawing(drawing));
             }
+
             drawings.Sort((d1, d2) => string.Compare(d1.Name, d2.Name, StringComparison.Ordinal));
             drawings.ForEach(Drawings.Add);
         }
@@ -64,7 +61,8 @@
             get => _exportVariant;
             set
             {
-                if (Equals(value, _exportVariant)) return;
+                if (Equals(value, _exportVariant))
+                    return;
                 _exportVariant = value;
                 OnPropertyChanged();
             }
@@ -78,7 +76,8 @@
             get => _selectedAutocadFileVersion;
             set
             {
-                if (Equals(value, _selectedAutocadFileVersion)) return;
+                if (Equals(value, _selectedAutocadFileVersion))
+                    return;
                 _selectedAutocadFileVersion = value;
                 OnPropertyChanged();
             }
@@ -90,7 +89,8 @@
             get => _overwriteExist;
             set
             {
-                if (Equals(value, _overwriteExist)) return;
+                if (Equals(value, _overwriteExist))
+                    return;
                 _overwriteExist = value;
                 OnPropertyChanged();
             }
@@ -100,27 +100,20 @@
 
         private void LoadSettings()
         {
-            _exportVariant = int.TryParse(UserConfigFile.GetValue(
-                UserConfigFile.ConfigFileZone.Settings, LangItem, nameof(ExportVariant)), out var i)
-                ? i
-                : 0;
+            _exportVariant = int.TryParse(UserConfigFile.GetValue(LangItem, nameof(ExportVariant)), out var i) ? i : 0;
             var selectedAutocadFileVersion = UserConfigFile.GetValue(
-                UserConfigFile.ConfigFileZone.Settings, LangItem, nameof(SelectedAutocadFileVersion));
+                LangItem, nameof(SelectedAutocadFileVersion));
             _selectedAutocadFileVersion = string.IsNullOrEmpty(selectedAutocadFileVersion)
                 ? "2013" : selectedAutocadFileVersion;
             _overwriteExist =
-                !bool.TryParse(UserConfigFile.GetValue(
-                    UserConfigFile.ConfigFileZone.Settings, LangItem, nameof(OverwriteExist)), out var b) || b; // true
+                !bool.TryParse(UserConfigFile.GetValue(LangItem, nameof(OverwriteExist)), out var b) || b; // true
         }
 
         public void SaveSettings()
         {
-            UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings,
-                LangItem, nameof(ExportVariant), ExportVariant.ToString(), true);
-            UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings,
-                LangItem, nameof(SelectedAutocadFileVersion), SelectedAutocadFileVersion, true);
-            UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings,
-                LangItem, nameof(OverwriteExist), OverwriteExist.ToString(), true);
+            UserConfigFile.SetValue(LangItem, nameof(ExportVariant), ExportVariant.ToString(), true);
+            UserConfigFile.SetValue(LangItem, nameof(SelectedAutocadFileVersion), SelectedAutocadFileVersion, true);
+            UserConfigFile.SetValue(LangItem, nameof(OverwriteExist), OverwriteExist.ToString(), true);
         }
 
         public ICommand ExportCommand { get; }
@@ -142,7 +135,7 @@
                 _rengaApplication.Project.Save();
             }
 
-            FolderBrowserDialog fbd = new FolderBrowserDialog
+            var fbd = new FolderBrowserDialog
             {
                 Description = Language.GetItem(LangItem, "h5"),
                 SelectedPath = GetSavedLastPath(),
@@ -150,7 +143,7 @@
             };
             if (fbd.ShowDialog() == DialogResult.OK)
             {
-                UserConfigFile.SetValue(UserConfigFile.ConfigFileZone.Settings, LangItem, "LastSelectedPath", fbd.SelectedPath, true);
+                UserConfigFile.SetValue(LangItem, "LastSelectedPath", fbd.SelectedPath, true);
                 ProgressDialogController controller = null;
                 try
                 {
@@ -223,7 +216,7 @@
 
         private string GetSavedLastPath()
         {
-            var savedPath = UserConfigFile.GetValue(UserConfigFile.ConfigFileZone.Settings,
+            var savedPath = UserConfigFile.GetValue(
                 LangItem, "LastSelectedPath");
             if (!string.IsNullOrEmpty(savedPath) && Directory.Exists(savedPath))
                 return savedPath;
@@ -252,14 +245,6 @@
             }
 
             return fileName;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

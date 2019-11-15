@@ -5,14 +5,16 @@
     using View;
     using ViewModel;
 
+    /// <inheritdoc />
     public class PluginStarter : IRengaFunction
     {
+        /// <inheritdoc />
         public void Start()
         {
-            Statistic.SendCommandStarting(Interface.Instance);
+            Statistic.SendCommandStarting(ModPlusConnector.Instance);
 
-            MainWindow mainWindow = new MainWindow();
-            MainViewModel mainViewModel = new MainViewModel(mainWindow);
+            var mainWindow = new MainWindow();
+            var mainViewModel = new MainViewModel(mainWindow);
             mainWindow.DataContext = mainViewModel;
             mainWindow.ShowDialog();
         }

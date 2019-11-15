@@ -1,13 +1,14 @@
-﻿namespace mrBatchSheetExport
+﻿#pragma warning disable SA1600 // Elements should be documented
+namespace mrBatchSheetExport
 {
     using System.Collections.Generic;
     using ModPlusAPI.Interfaces;
 
-    public class Interface : IModPlusFunctionForRenga
+    public class ModPlusConnector : IModPlusFunctionForRenga
     {
-        private static Interface _instance;
+        private static ModPlusConnector _instance;
 
-        public static Interface Instance => _instance ?? (_instance = new Interface());
+        public static ModPlusConnector Instance => _instance ?? (_instance = new ModPlusConnector());
 
         public SupportedProduct SupportedProduct => SupportedProduct.Renga;
 
@@ -34,3 +35,4 @@
         public string FullDescription => string.Empty;
     }
 }
+#pragma warning restore SA1600 // Elements should be documented
