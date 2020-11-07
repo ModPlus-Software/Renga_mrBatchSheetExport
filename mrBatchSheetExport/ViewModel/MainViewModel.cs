@@ -39,7 +39,7 @@
             _rengaApplication = new Renga.Application();
             LoadSettings();
             Drawings = new ObservableCollection<Drawing>();
-            ExportCommand = new RelayCommand(Export);
+            ExportCommand = new RelayCommandWithoutParameter(Export);
         }
 
         public void GetDrawings()
@@ -118,7 +118,7 @@
 
         public ICommand ExportCommand { get; }
 
-        private async void Export(object o)
+        private async void Export()
         {
             var selectedDrawings = Drawings.Where(d => d.Selected).ToList();
             if (selectedDrawings.Count == 0)
@@ -209,6 +209,7 @@
                 case "2007": return AutocadVersion.AutocadVersion_v2007;
                 case "2010": return AutocadVersion.AutocadVersion_v2010;
                 case "2013": return AutocadVersion.AutocadVersion_v2013;
+                case "2018": return AutocadVersion.AutocadVersion_v2018;
             }
 
             return AutocadVersion.AutocadVersion_v2018;
